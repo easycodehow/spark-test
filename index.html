@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="생각나는 순간 메모한다 - SPARK">
+  <meta name="theme-color" content="#FFD93D">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- 아이콘 -->
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512x512.png">
+  <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+
+  <!-- 스타일 -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <title>SPARK - 생각나는 순간 메모한다</title>
+</head>
+<body>
+
+  <!-- 메인 화면 -->
+  <main id="main-view" class="view active">
+
+    <!-- 헤더 -->
+    <header class="header">
+      <h1 class="logo">SPARK</h1>
+      <div class="header-controls">
+        <button id="font-size-btn" class="icon-btn" aria-label="글자 크기 조절">
+          <span class="icon">Aa</span>
+        </button>
+        <button id="dark-mode-btn" class="icon-btn" aria-label="다크모드 전환">
+          <span class="icon">🌙</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- 메모 입력 영역 -->
+    <section class="memo-input-section">
+      <textarea
+        id="memo-input"
+        class="memo-textarea"
+        placeholder="메모를 입력하세요..."
+        aria-label="메모 입력"
+      ></textarea>
+
+      <!-- 입력 도구 버튼 -->
+      <div class="input-tools">
+        <button class="tool-btn" aria-label="카메라">📷</button>
+        <button class="tool-btn" aria-label="음성">🎤</button>
+        <button id="important-btn" class="tool-btn" aria-label="중요 메모">★</button>
+      </div>
+
+      <!-- 저장 버튼 -->
+      <button id="save-btn" class="btn btn-primary">저장하기</button>
+    </section>
+
+    <!-- 저장된 메모 섹션 -->
+    <section class="memo-list-section">
+      <h2 class="section-title">저장된 메모</h2>
+
+      <!-- 검색 & 필터 -->
+      <div class="search-filter-wrapper">
+        <div class="search-box">
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="메모 검색"
+            aria-label="메모 검색"
+          >
+          <span class="search-icon">🔍</span>
+        </div>
+        <button id="filter-toggle" class="filter-toggle-btn" data-filter="all" aria-label="필터 전환">
+          ★ 중요
+        </button>
+      </div>
+
+      <!-- 메모 목록 -->
+      <ul id="memo-list" class="memo-list">
+        <!-- 메모 카드 예시 (JavaScript로 동적 생성됨) -->
+        <li class="memo-card important">
+          <h3 class="memo-title">제목(예시 첫줄)</h3>
+          <time class="memo-date">2025.12.25. 12:00</time>
+        </li>
+        <li class="memo-card">
+          <h3 class="memo-title">제목</h3>
+          <time class="memo-date">2025.12.24. 08:00</time>
+        </li>
+      </ul>
+    </section>
+
+  </main>
+
+  <!-- 메모 보기 화면 -->
+  <article id="memo-view" class="view">
+
+    <!-- 헤더 -->
+    <header class="header">
+      <button id="back-btn" class="icon-btn" aria-label="뒤로가기">
+        <span class="icon">←</span>
+      </button>
+      <h2 class="page-title">메모보기</h2>
+    </header>
+
+    <!-- 메모 내용 -->
+    <section class="memo-content-section">
+      <div id="memo-content" class="memo-content">
+        <p>Text Text .....</p>
+        <p>Text ....</p>
+      </div>
+      <time id="memo-content-date" class="memo-content-date">2025.12.25</time>
+    </section>
+
+    <!-- 하단 버튼 -->
+    <footer class="memo-actions">
+      <button id="edit-btn" class="action-btn">수정</button>
+      <button id="share-btn" class="action-btn">공유</button>
+      <button id="copy-btn" class="action-btn">복사</button>
+      <button id="delete-btn" class="action-btn action-btn-danger">삭제</button>
+    </footer>
+
+  </article>
+
+  <!-- JavaScript -->
+  <script src="js/app.js"></script>
+  <script src="js/sw-register.js"></script>
+
+</body>
+</html>
