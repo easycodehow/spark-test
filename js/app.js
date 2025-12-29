@@ -8,6 +8,8 @@
 let memosArray = []; // 메모 배열
 let currentFilter = 'all'; // 현재 필터 상태 (기본: 전체)
 let isImportantMode = false; // 중요 메모 모드
+let currentMemoId = null; // 현재 보고 있는 메모 ID
+let isEditMode = false; // 수정 모드 여부
 
 // ==========================================
 // DOM 요소
@@ -18,6 +20,17 @@ const importantBtn = document.getElementById('important-btn');
 const memoList = document.getElementById('memo-list');
 const searchInput = document.getElementById('search-input');
 const filterToggle = document.getElementById('filter-toggle');
+
+// 메모 보기 화면 요소
+const mainView = document.getElementById('main-view');
+const memoView = document.getElementById('memo-view');
+const backBtn = document.getElementById('back-btn');
+const memoContent = document.getElementById('memo-content');
+const memoContentDate = document.getElementById('memo-content-date');
+const editBtn = document.getElementById('edit-btn');
+const shareBtn = document.getElementById('share-btn');
+const copyBtn = document.getElementById('copy-btn');
+const deleteBtn = document.getElementById('delete-btn');
 
 // ==========================================
 // LocalStorage 함수
@@ -55,6 +68,12 @@ function addMemo() {
     return;
   }
 
+  // 수정 모드일 경우
+  if (isEditMode) {
+    updateMemo(content);
+    return;
+  }
+
   // 첫 줄을 제목으로 추출
   const lines = content.split('\n').filter(line => line.trim() !== '');
   const title = lines.length > 0 ? lines[0] : '제목 없음';
@@ -89,6 +108,52 @@ function addMemo() {
   renderMemos();
 
   console.log('새 메모 추가:', newMemo.title);
+}
+
+// 메모 업데이트 (수정 완료)
+function updateMemo(content) {
+  // 메모 찾기
+  const memo = memosArray.find(m => m.id === currentMemoId);
+
+  if (!memo) {
+    alert('메모를 찾을 수 없습니다.');
+    return;
+  }
+
+  // 첫 줄을 제목으로 추출
+  const lines = content.split('\n').filter(line => line.trim() !== '');
+  const title = lines.length > 0 ? lines[0] : '제목 없음';
+
+  // 메모 내용 업데이트
+  memo.title = title;
+  memo.content = content;
+  memo.isImportant = isImportantMode;
+  memo.date = new Date().toLocaleString('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).replace(/\. /g, '.').replace(/\.$/, '');
+
+  // LocalStorage에 저장
+  saveMemos();
+
+  // 수정 모드 초기화
+  isEditMode = false;
+  currentMemoId = null;
+  saveBtn.textContent = '저장하기';
+
+  // 입력창 초기화
+  memoInput.value = '';
+  isImportantMode = false;
+  importantBtn.classList.remove('active');
+
+  // 목록 다시 렌더링
+  renderMemos();
+
+  console.log('메모 수정 완료:', memo.title);
+  alert('메모가 수정되었습니다.');
 }
 
 // ==========================================
@@ -142,12 +207,123 @@ function renderMemos() {
 }
 
 // ==========================================
-// 메모 상세보기 (추후 구현)
+// 메모 상세보기
 // ==========================================
 
 function showMemoDetail(memoId) {
-  console.log('메모 상세보기:', memoId);
-  // TODO: 메모 보기 화면으로 전환
+  // 메모 찾기
+  const memo = memosArray.find(m => m.id === memoId);
+
+  if (!memo) {
+    alert('메모를 찾을 수 없습니다.');
+    return;
+  }
+
+  // 현재 메모 ID 저장
+  currentMemoId = memoId;
+
+  // 메모 내용 표시
+  memoContent.innerHTML = memo.content.replace(/\n/g, '<br>');
+  memoContentDate.textContent = memo.date;
+
+  // 화면 전환
+  mainView.classList.remove('active');
+  memoView.classList.add('active');
+
+  console.log('메모 상세보기:', memo.title);
+}
+
+// 메인 화면으로 돌아가기
+function goBack() {
+  memoView.classList.remove('active');
+  mainView.classList.add('active');
+  currentMemoId = null;
+
+  // 수정 모드였다면 초기화
+  if (isEditMode) {
+    isEditMode = false;
+    saveBtn.textContent = '저장하기';
+    memoInput.value = '';
+  }
+
+  console.log('메인 화면으로 복귀');
+}
+
+// ==========================================
+// 메모 수정
+// ==========================================
+
+function editMemo() {
+  // 현재 메모 찾기
+  const memo = memosArray.find(m => m.id === currentMemoId);
+
+  if (!memo) {
+    alert('메모를 찾을 수 없습니다.');
+    return;
+  }
+
+  // 수정 모드 활성화
+  isEditMode = true;
+
+  // 메모 내용을 입력창에 불러오기
+  memoInput.value = memo.content;
+
+  // 중요 메모 상태 반영
+  isImportantMode = memo.isImportant;
+  if (isImportantMode) {
+    importantBtn.classList.add('active');
+  } else {
+    importantBtn.classList.remove('active');
+  }
+
+  // 저장 버튼 텍스트 변경
+  saveBtn.textContent = '수정완료';
+
+  // 메인 화면으로 전환
+  memoView.classList.remove('active');
+  mainView.classList.add('active');
+
+  // 입력창에 포커스
+  memoInput.focus();
+
+  console.log('메모 수정 모드:', memo.title);
+}
+
+// ==========================================
+// 메모 삭제
+// ==========================================
+
+function deleteMemo() {
+  // 삭제 확인
+  if (!confirm('정말 이 메모를 삭제하시겠습니까?')) {
+    return;
+  }
+
+  // 메모 찾아서 삭제
+  const index = memosArray.findIndex(m => m.id === currentMemoId);
+
+  if (index === -1) {
+    alert('메모를 찾을 수 없습니다.');
+    return;
+  }
+
+  const deletedMemo = memosArray[index];
+
+  // 배열에서 제거
+  memosArray.splice(index, 1);
+
+  // LocalStorage에 저장
+  saveMemos();
+
+  console.log('메모 삭제:', deletedMemo.title);
+
+  // 메인 화면으로 복귀
+  goBack();
+
+  // 목록 다시 렌더링
+  renderMemos();
+
+  alert('메모가 삭제되었습니다.');
 }
 
 // ==========================================
@@ -207,6 +383,11 @@ memoInput.addEventListener('keydown', (e) => {
     addMemo();
   }
 });
+
+// 메모 보기 화면 버튼들
+backBtn.addEventListener('click', goBack);
+editBtn.addEventListener('click', editMemo);
+deleteBtn.addEventListener('click', deleteMemo);
 
 // ==========================================
 // 초기화

@@ -371,12 +371,16 @@ ul {
    메모 보기 화면
    ========================================== */
 .memo-content-section {
-  flex: 1;
+  display: flex;
+  flex-direction: column;
   padding: var(--spacing-lg);
   background-color: var(--color-card-bg);
   margin: var(--spacing-md);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
+  /* 내용에 따라 높이 자동 조절 */
+  min-height: 200px;
+  max-height: calc(100vh - 300px); /* 너무 길면 스크롤 */
   overflow-y: auto;
 }
 
@@ -398,38 +402,47 @@ ul {
   font-size: 14px;
   color: var(--color-text-secondary);
   text-align: right;
+  margin-top: auto; /* 하단에 고정 */
+  padding-top: var(--spacing-md);
 }
 
-/* 하단 버튼 */
+/* 액션 버튼 (아이콘) */
 .memo-actions {
   display: flex;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-lg);
-  background-color: var(--color-bg);
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  gap: var(--spacing-md);
+  justify-content: center;
+  padding-top: var(--spacing-md);
+  margin-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border);
 }
 
 .action-btn {
-  flex: 1;
-  padding: var(--spacing-sm);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--color-bg);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-card-bg);
-  color: var(--color-text);
-  font-size: 14px;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   transition: all 0.2s;
+  cursor: pointer;
 }
 
 .action-btn:hover {
   background-color: var(--color-primary);
   border-color: var(--color-primary);
+  transform: scale(1.1);
 }
 
 .action-btn-danger:hover {
   background-color: var(--color-danger);
   border-color: var(--color-danger);
-  color: #FFFFFF;
+}
+
+.action-icon {
+  font-size: 20px;
+  display: block;
 }
 
 /* ==========================================
@@ -449,11 +462,12 @@ ul {
     min-height: 300px;
   }
 
-  .memo-actions {
-    flex-wrap: wrap;
+  .action-btn {
+    width: 40px;
+    height: 40px;
   }
 
-  .action-btn {
-    flex: 1 1 calc(50% - var(--spacing-xs));
+  .action-icon {
+    font-size: 18px;
   }
 }
