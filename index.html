@@ -28,14 +28,33 @@
     <header class="header">
       <h1 class="logo">SPARK</h1>
       <div class="header-controls">
-        <button id="font-size-btn" class="icon-btn" aria-label="글자 크기 조절">
-          <span class="icon">Aa</span>
+        <button id="menu-btn" class="icon-btn" aria-label="메뉴">
+          <span class="icon">⋮</span>
         </button>
-        <button id="dark-mode-btn" class="icon-btn" aria-label="다크모드 전환">
-          <span class="icon">🌙</span>
-        </button>
+        <!-- 드롭다운 메뉴 -->
+        <div id="dropdown-menu" class="dropdown-menu">
+          <button id="export-btn" class="menu-item">
+            <span class="menu-icon">📤</span>
+            <span class="menu-text">메모 내보내기</span>
+          </button>
+          <button id="import-btn" class="menu-item">
+            <span class="menu-icon">📥</span>
+            <span class="menu-text">메모 가져오기</span>
+          </button>
+          <button id="font-size-btn" class="menu-item">
+            <span class="menu-icon">Aa</span>
+            <span class="menu-text">글자 크기</span>
+          </button>
+          <button id="dark-mode-btn" class="menu-item">
+            <span class="menu-icon">🌙</span>
+            <span class="menu-text">다크모드</span>
+          </button>
+        </div>
       </div>
     </header>
+
+    <!-- 파일 선택 input (숨김) -->
+    <input type="file" id="import-file-input" accept=".json" style="display: none;">
 
     <!-- 메모 입력 영역 -->
     <section class="memo-input-section">

@@ -18,8 +18,8 @@
 ## 기술 스택
 - Frontend: HTML5, CSS3, Vanilla JavaScript
 - PWA: Service Worker, Web App Manifest
-- Database: Supabase
-- Storage: LocalStorage (오프라인), Supabase (동기화)
+- Storage: LocalStorage (메모 저장)
+- Backup: JSON 파일 내보내기/가져오기
 - 배포: Vercel
 - 버전관리: GitHub
 
@@ -60,9 +60,10 @@ spark/
 ##  전체 진행 상황
 - [x] 1단계: 프로젝트 기본 설정
 - [x] 2단계: 메모장 기본 기능
-- [ ] 3단계: PWA 기능 추가
-- [ ] 4단계: Supabase 연동
-- [ ] 5단계: 배포 및 테스트
+- [x] 3단계: PWA 기능 추가
+- [x] 4단계: 백업 관리 기능
+- [ ] 5단계: 추가 기능
+- [ ] 6단계: 배포 및 테스트
 
 
 ---
@@ -144,15 +145,15 @@ spark/
 - 브라우저에 Service Worker를 등록하는 코드를 추가합니다
 
 ### 오프라인 동작 테스트
-- [ ] 브라우저에서 앱 실행
-- [ ] 개발자 도구 → Application → Service Workers 확인
-- [ ] Service Worker "activated and is running" 확인
-- [ ] 오프라인 모드로 전환 (Network 탭 → Offline 체크)
-- [ ] 페이지 새로고침 후 앱 정상 작동 확인
-- [ ] 오프라인에서 메모 추가 테스트
-- [ ] 오프라인에서 메모 수정 테스트
-- [ ] 오프라인에서 메모 삭제 테스트
-- [ ] 온라인 복구 후 데이터 유지 확인
+- [x] 브라우저에서 앱 실행
+- [x] 개발자 도구 → Application → Service Workers 확인
+- [x] Service Worker "activated and is running" 확인
+- [x] 오프라인 모드로 전환 (Network 탭 → Offline 체크)
+- [x] 페이지 새로고침 후 앱 정상 작동 확인
+- [x] 오프라인에서 메모 추가 테스트
+- [x] 오프라인에서 메모 수정 테스트
+- [x] 오프라인에서 메모 삭제 테스트
+- [x] 온라인 복구 후 데이터 유지 확인
 
 ** Claude Code가 하는 일**:
 - 테스트 방법을 안내합니다
@@ -160,7 +161,56 @@ spark/
 
 ---
 
-## 4️추가 기능 (1시간)
+## 4️ 백업 관리 기능 (30분)
+
+### 메모 내보내기 (Export)
+- [x] 내보내기 버튼 추가 (헤더)
+- [x] LocalStorage 메모를 JSON으로 변환
+- [x] JSON 파일 다운로드 기능
+- [x] 파일명에 날짜 포함 (예: spark-backup-2025-12-30.json)
+
+** Claude Code가 하는 일**:
+- File Download API를 사용하여 JSON 파일 생성
+- 모든 메모 데이터를 백업 파일로 저장
+
+### 메모 가져오기 (Import)
+- [x] 가져오기 버튼 추가 (헤더)
+- [x] 파일 선택 기능 (input file)
+- [x] JSON 파일 읽기
+- [x] LocalStorage에 메모 복원
+- [x] 기존 메모와 병합 옵션
+
+** Claude Code가 하는 일**:
+- File Reader API를 사용하여 JSON 파일 읽기
+- 백업 파일에서 메모 데이터 복원
+- 중복 메모 처리 로직 구현
+
+### 백업 관리
+- [x] 백업 성공/실패 알림
+- [x] 복원 전 확인 메시지
+- [x] 잘못된 파일 형식 검증
+
+** Claude Code가 하는 일**:
+- 사용자 친화적인 백업/복원 UI 제공
+- 에러 처리 및 검증 로직 구현
+
+---
+
+## 5️ 추가 기능 (1.5시간)
+
+### 이미지 첨부
+- [ ] 갤러리에서 이미지 선택 기능
+- [ ] 카메라로 사진 촬영 기능
+- [ ] 이미지 미리보기
+- [ ] IndexedDB에 이미지 저장 (Base64)
+- [ ] 메모에 이미지 표시
+- [ ] 이미지 삭제 기능
+
+** Claude Code가 하는 일**:
+- File API를 사용한 이미지 선택 기능 구현
+- IndexedDB를 사용하여 로컬에 이미지 저장
+- 이미지 미리보기 UI 작성
+- Base64 인코딩으로 이미지 데이터 관리
 
 ### 다크모드
 - [ ] 다크모드 토글 버튼 추가
@@ -188,33 +238,6 @@ spark/
 ** Claude Code가 하는 일**:
 - 버튼 클릭으로 메모를 복사할 수 있게 합니다
 - "복사 완료!" 메시지를 보여줍니다
-
----
-
-## 5️Supabase 연동 (선택사항, 1시간)
-
-### Supabase 프로젝트 설정
-- [ ] Supabase 프로젝트 생성
-- [ ] `memos` 테이블 생성
-  - [ ] id (UUID)
-  - [ ] content (Text)
-  - [ ] created_at (Timestamp)
-  - [ ] user_id (UUID, 선택)
-- [ ] API 키 확인
-
-** Claude Code가 하는 일**:
-- Supabase 테이블 생성 SQL을 제공합니다
-
-### 데이터 동기화
-- [ ] Supabase 클라이언트 설치
-- [ ] 메모 저장 시 Supabase에도 저장
-- [ ] 앱 로드 시 Supabase에서 메모 불러오기
-- [ ] LocalStorage와 Supabase 동기화 로직
-
-** Claude Code가 하는 일**:
-- Supabase 연결 코드를 작성합니다
-- 로컬과 클라우드에 모두 저장되게 합니다
-- 인터넷 연결 시 자동 동기화되게 만듭니다
 
 ---
 
@@ -251,7 +274,8 @@ spark/
 - [x] 메모 추가 작동
 - [x] 메모 수정 작동
 - [x] 메모 삭제 작동
-- [ ] 오프라인에서도 작동
+- [x] 오프라인에서도 작동
+- [x] 메모 백업/복원 작동
 - [ ] 다크모드 전환 작동
 - [ ] 공유 기능 작동 (모바일)
 - [ ] 클립보드 복사 작동

@@ -362,6 +362,159 @@ function toggleFilter() {
 }
 
 // ==========================================
+// 드롭다운 메뉴
+// ==========================================
+
+// 메뉴 토글
+function toggleMenu() {
+  const menu = document.getElementById('dropdown-menu');
+  menu.classList.toggle('active');
+}
+
+// 메뉴 외부 클릭 시 닫기
+function closeMenuOnClickOutside(event) {
+  const menu = document.getElementById('dropdown-menu');
+  const menuBtn = document.getElementById('menu-btn');
+
+  // 메뉴나 메뉴 버튼이 아닌 곳을 클릭하면 메뉴 닫기
+  if (!menu.contains(event.target) && !menuBtn.contains(event.target)) {
+    menu.classList.remove('active');
+  }
+}
+
+// 메뉴 아이템 클릭 시 메뉴 닫기
+function closeMenuAfterClick() {
+  const menu = document.getElementById('dropdown-menu');
+  menu.classList.remove('active');
+}
+
+// ==========================================
+// 백업 관리 기능
+// ==========================================
+
+// 메모 내보내기 (JSON 다운로드)
+function exportMemos() {
+  // 메모가 없으면 경고
+  if (memosArray.length === 0) {
+    alert('내보낼 메모가 없습니다.');
+    return;
+  }
+
+  // JSON 문자열로 변환 (들여쓰기 2칸)
+  const jsonData = JSON.stringify(memosArray, null, 2);
+
+  // Blob 생성 (JSON 파일)
+  const blob = new Blob([jsonData], { type: 'application/json' });
+
+  // 다운로드 링크 생성
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+
+  // 파일명: spark-backup-2025-12-30.json
+  const today = new Date();
+  const dateStr = today.toISOString().split('T')[0]; // YYYY-MM-DD
+  a.download = `spark-backup-${dateStr}.json`;
+
+  // 다운로드 실행
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+
+  // URL 해제
+  URL.revokeObjectURL(url);
+
+  console.log('메모 내보내기 완료:', memosArray.length + '개');
+  alert(`메모 ${memosArray.length}개를 백업 파일로 저장했습니다.`);
+}
+
+// 메모 가져오기 (JSON 파일 읽기)
+function importMemos() {
+  // 파일 선택 input 클릭
+  const fileInput = document.getElementById('import-file-input');
+  fileInput.click();
+}
+
+// 파일 선택 시 실행
+function handleFileImport(event) {
+  const file = event.target.files[0];
+
+  // 파일이 선택되지 않았으면 종료
+  if (!file) {
+    return;
+  }
+
+  // JSON 파일이 아니면 경고
+  if (!file.name.endsWith('.json')) {
+    alert('JSON 파일만 가져올 수 있습니다.');
+    return;
+  }
+
+  // 파일 읽기
+  const reader = new FileReader();
+
+  reader.onload = function(e) {
+    try {
+      // JSON 파싱
+      const importedMemos = JSON.parse(e.target.result);
+
+      // 배열이 아니면 에러
+      if (!Array.isArray(importedMemos)) {
+        throw new Error('올바른 백업 파일이 아닙니다.');
+      }
+
+      // 복원 확인
+      const confirmMsg = `${importedMemos.length}개의 메모를 가져옵니다.\n기존 메모 ${memosArray.length}개와 병합됩니다.\n계속하시겠습니까?`;
+      if (!confirm(confirmMsg)) {
+        return;
+      }
+
+      // 메모 병합 (중복 제거)
+      const existingIds = new Set(memosArray.map(m => m.id));
+      let addedCount = 0;
+
+      importedMemos.forEach(memo => {
+        // 필수 필드 검증
+        if (memo.id && memo.title && memo.content && memo.date !== undefined) {
+          // 중복되지 않은 메모만 추가
+          if (!existingIds.has(memo.id)) {
+            memosArray.push(memo);
+            addedCount++;
+          }
+        }
+      });
+
+      // 날짜순 정렬 (최신순)
+      memosArray.sort((a, b) => b.id - a.id);
+
+      // LocalStorage에 저장
+      saveMemos();
+
+      // 목록 다시 렌더링
+      renderMemos();
+
+      console.log('메모 가져오기 완료:', addedCount + '개 추가');
+      alert(`${addedCount}개의 메모를 추가했습니다.\n(중복 ${importedMemos.length - addedCount}개 제외)`);
+
+    } catch (error) {
+      console.error('파일 가져오기 실패:', error);
+      alert('파일을 읽을 수 없습니다.\n올바른 백업 파일인지 확인하세요.');
+    }
+
+    // input 초기화
+    event.target.value = '';
+  };
+
+  reader.onerror = function() {
+    alert('파일 읽기 중 오류가 발생했습니다.');
+    event.target.value = '';
+  };
+
+  // 파일 읽기 시작
+  reader.readAsText(file);
+}
+
+// ==========================================
 // 이벤트 리스너
 // ==========================================
 
@@ -389,6 +542,26 @@ backBtn.addEventListener('click', goBack);
 editBtn.addEventListener('click', editMemo);
 deleteBtn.addEventListener('click', deleteMemo);
 
+// 드롭다운 메뉴
+const menuBtn = document.getElementById('menu-btn');
+menuBtn.addEventListener('click', toggleMenu);
+document.addEventListener('click', closeMenuOnClickOutside);
+
+// 백업 관리 버튼들
+const exportBtn = document.getElementById('export-btn');
+const importBtn = document.getElementById('import-btn');
+const importFileInput = document.getElementById('import-file-input');
+
+exportBtn.addEventListener('click', () => {
+  exportMemos();
+  closeMenuAfterClick();
+});
+importBtn.addEventListener('click', () => {
+  importMemos();
+  closeMenuAfterClick();
+});
+importFileInput.addEventListener('change', handleFileImport);
+
 // ==========================================
 // 초기화
 // ==========================================
@@ -396,7 +569,7 @@ deleteBtn.addEventListener('click', deleteMemo);
 function init() {
   console.log('=== SPARK 메모장 앱 시작 ===');
 
-  // 메모 불러오기
+  // LocalStorage에서 메모 불러오기
   loadMemos();
 
   // 메모 목록 렌더링
