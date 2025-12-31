@@ -853,8 +853,15 @@ function adjustFloatingButtonsForKeyboard() {
     return;
   }
 
+  // 디버깅 정보 표시용 요소 추가
+  const debugInfo = document.createElement('div');
+  debugInfo.id = 'debug-info';
+  debugInfo.style.cssText = 'position: fixed; top: 60px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 8px; border-radius: 4px; font-size: 12px; z-index: 9999;';
+  document.body.appendChild(debugInfo);
+
   // Visual Viewport API 지원 확인
   if (!window.visualViewport) {
+    debugInfo.textContent = 'Visual Viewport API 미지원';
     console.log('Visual Viewport API 미지원 브라우저');
     return;
   }
@@ -866,6 +873,14 @@ function adjustFloatingButtonsForKeyboard() {
 
     // 키보드 높이 계산
     const keyboardHeight = windowHeight - visualViewportHeight;
+
+    // 디버깅 정보 업데이트
+    debugInfo.innerHTML = `
+      Window: ${windowHeight}px<br>
+      Viewport: ${visualViewportHeight}px<br>
+      Keyboard: ${keyboardHeight}px<br>
+      Bottom: ${floatingButtons.style.bottom}
+    `;
 
     // 버튼 위치 조정
     if (keyboardHeight > 0) {
