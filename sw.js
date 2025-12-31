@@ -2,7 +2,7 @@
 // SPARK Service Worker
 // ==========================================
 
-const CACHE_NAME = 'spark-cache-v4';
+const CACHE_NAME = 'spark-cache-v7';
 
 // 캐시할 파일 목록
 const FILES_TO_CACHE = [

@@ -395,6 +395,39 @@ function shareMemo() {
 }
 
 // ==========================================
+// 메모 복사 (클립보드)
+// ==========================================
+
+function copyMemo() {
+  console.log('copyMemo 함수 실행됨');
+
+  // 현재 메모 찾기
+  const memo = memosArray.find(m => m.id === currentMemoId);
+
+  if (!memo) {
+    alert('메모를 찾을 수 없습니다.');
+    return;
+  }
+
+  // Clipboard API 지원 확인
+  if (!navigator.clipboard) {
+    alert('이 브라우저는 클립보드 복사를 지원하지 않습니다.');
+    return;
+  }
+
+  // 클립보드에 복사
+  navigator.clipboard.writeText(memo.content)
+    .then(() => {
+      console.log('메모 복사 성공:', memo.title);
+      alert('메모가 클립보드에 복사되었습니다!');
+    })
+    .catch((error) => {
+      console.error('복사 실패:', error);
+      alert('메모 복사 중 오류가 발생했습니다.');
+    });
+}
+
+// ==========================================
 // 중요 메모 토글
 // ==========================================
 
@@ -761,13 +794,22 @@ backBtn.addEventListener('click', goBack);
 editBtn.addEventListener('click', editMemo);
 deleteBtn.addEventListener('click', deleteMemo);
 
-// 공유 버튼 (디버깅 로그 추가)
+// 공유 버튼
 console.log('shareBtn 요소:', shareBtn);
 if (shareBtn) {
   shareBtn.addEventListener('click', shareMemo);
   console.log('공유 버튼 이벤트 리스너 등록 완료');
 } else {
   console.error('shareBtn 요소를 찾을 수 없습니다!');
+}
+
+// 복사 버튼
+console.log('copyBtn 요소:', copyBtn);
+if (copyBtn) {
+  copyBtn.addEventListener('click', copyMemo);
+  console.log('복사 버튼 이벤트 리스너 등록 완료');
+} else {
+  console.error('copyBtn 요소를 찾을 수 없습니다!');
 }
 
 // 드롭다운 메뉴
