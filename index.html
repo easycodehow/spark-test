@@ -65,12 +65,18 @@
         aria-label="메모 입력"
       ></textarea>
 
+      <!-- 이미지 미리보기 영역 -->
+      <div id="image-preview-container" class="image-preview-container"></div>
+
       <!-- 입력 도구 버튼 -->
       <div class="input-tools">
-        <button class="tool-btn" aria-label="카메라">📷</button>
+        <button id="image-btn" class="tool-btn" aria-label="이미지 첨부">📷</button>
         <button class="tool-btn" aria-label="음성">🎤</button>
         <button id="important-btn" class="tool-btn" aria-label="중요 메모">★</button>
       </div>
+
+      <!-- 이미지 파일 선택 input (숨김) -->
+      <input type="file" id="image-input" accept="image/*" style="display: none;" multiple>
 
       <!-- 저장 버튼 -->
       <button id="save-btn" class="btn btn-primary">저장하기</button>
@@ -130,6 +136,10 @@
         <p>Text Text .....</p>
         <p>Text ....</p>
       </div>
+
+      <!-- 이미지 영역 -->
+      <div id="memo-images-container" class="memo-images-container"></div>
+
       <time id="memo-content-date" class="memo-content-date">2025.12.25</time>
 
       <!-- 액션 버튼 -->
