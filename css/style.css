@@ -206,7 +206,9 @@ ul {
   padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 80px); /* 헤더 높이 제외 */
+  /* 동적 viewport height - 키보드 고려 */
+  min-height: calc(100vh - 80px); /* fallback */
+  min-height: calc(100dvh - 80px); /* 최신 브라우저 */
   gap: var(--spacing-md);
 }
 
