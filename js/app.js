@@ -842,66 +842,6 @@ imageBtn.addEventListener('click', selectImage);
 imageInput.addEventListener('change', handleImageSelect);
 
 // ==========================================
-// 키보드 감지 및 버튼 위치 조정
-// ==========================================
-
-function adjustFloatingButtonsForKeyboard() {
-  const floatingButtons = document.querySelector('.floating-buttons');
-
-  if (!floatingButtons) {
-    console.error('floating-buttons 요소를 찾을 수 없습니다.');
-    return;
-  }
-
-  // 디버깅 정보 표시용 요소 추가
-  const debugInfo = document.createElement('div');
-  debugInfo.id = 'debug-info';
-  debugInfo.style.cssText = 'position: fixed; top: 60px; right: 10px; background: rgba(0,0,0,0.7); color: white; padding: 8px; border-radius: 4px; font-size: 12px; z-index: 9999;';
-  document.body.appendChild(debugInfo);
-
-  // Visual Viewport API 지원 확인
-  if (!window.visualViewport) {
-    debugInfo.textContent = 'Visual Viewport API 미지원';
-    console.log('Visual Viewport API 미지원 브라우저');
-    return;
-  }
-
-  // viewport 크기 변경 감지 (키보드 올라올 때)
-  function updateButtonPosition() {
-    const visualViewportHeight = window.visualViewport.height;
-    const windowHeight = window.innerHeight;
-
-    // 키보드 높이 계산
-    const keyboardHeight = windowHeight - visualViewportHeight;
-
-    // 디버깅 정보 업데이트
-    debugInfo.innerHTML = `
-      Window: ${windowHeight}px<br>
-      Viewport: ${visualViewportHeight}px<br>
-      Keyboard: ${keyboardHeight}px<br>
-      Bottom: ${floatingButtons.style.bottom}
-    `;
-
-    // 버튼 위치 조정
-    if (keyboardHeight > 0) {
-      floatingButtons.style.bottom = `${keyboardHeight}px`;
-      console.log('키보드 감지:', keyboardHeight + 'px');
-    } else {
-      floatingButtons.style.bottom = '0px';
-    }
-  }
-
-  // viewport resize 이벤트 리스너
-  window.visualViewport.addEventListener('resize', updateButtonPosition);
-  window.visualViewport.addEventListener('scroll', updateButtonPosition);
-
-  // 초기 위치 설정
-  updateButtonPosition();
-
-  console.log('키보드 감지 기능 활성화');
-}
-
-// ==========================================
 // 초기화
 // ==========================================
 
@@ -916,9 +856,6 @@ function init() {
 
   // 메모 목록 렌더링
   renderMemos();
-
-  // 키보드 감지 및 버튼 위치 조정
-  adjustFloatingButtonsForKeyboard();
 
   console.log('초기화 완료');
 }

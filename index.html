@@ -68,15 +68,17 @@
       <!-- 이미지 미리보기 영역 -->
       <div id="image-preview-container" class="image-preview-container"></div>
 
+      <!-- 입력 도구 버튼 -->
+      <div class="input-tools">
+        <button id="image-btn" class="tool-btn" aria-label="이미지 첨부">📷</button>
+        <button id="important-btn" class="tool-btn" aria-label="중요 메모">★</button>
+      </div>
+
       <!-- 이미지 파일 선택 input (숨김) -->
       <input type="file" id="image-input" accept="image/*" style="display: none;" multiple>
 
-      <!-- Floating Action Buttons (키보드 위에 위치) -->
-      <div class="floating-buttons">
-        <button id="save-btn" class="fab" aria-label="저장" title="저장">✓</button>
-        <button id="image-btn" class="fab" aria-label="이미지 첨부" title="이미지 첨부">📷</button>
-        <button id="important-btn" class="fab" aria-label="중요 메모" title="중요 메모">★</button>
-      </div>
+      <!-- 저장 버튼 -->
+      <button id="save-btn" class="btn btn-primary">저장하기</button>
     </section>
 
     <!-- 저장된 메모 섹션 -->

@@ -204,12 +204,11 @@ ul {
    ========================================== */
 .memo-input-section {
   padding: var(--spacing-lg);
-  padding-bottom: 80px; /* 버튼 공간 확보 */
 }
 
 .memo-textarea {
   width: 100%;
-  min-height: 300px;
+  min-height: 400px;
   padding: var(--spacing-md);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
@@ -335,66 +334,6 @@ ul {
   box-shadow: var(--shadow-md);
 }
 
-/* ==========================================
-   Floating Action Buttons (FAB)
-   ========================================== */
-.floating-buttons {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  background-color: var(--color-bg);
-  border-top: 1px solid var(--color-border);
-  transition: bottom 0.2s ease;
-  z-index: 1000;
-}
-
-.fab {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: none;
-  background-color: var(--color-primary);
-  color: var(--color-text);
-  font-size: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  transition: all 0.3s ease;
-}
-
-.fab:hover {
-  transform: scale(1.1);
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
-}
-
-.fab:active {
-  transform: scale(0.95);
-}
-
-/* 중요 메모 활성화 상태 */
-#important-btn.active {
-  background-color: #ff6b6b;
-  animation: pulse 0.3s ease;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-/* 다크모드 */
-body.dark-mode .fab {
-  background-color: var(--color-primary);
-  color: var(--color-text);
-}
 
 /* ==========================================
    저장된 메모 섹션
