@@ -204,18 +204,23 @@ ul {
    ========================================== */
 .memo-input-section {
   padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 80px); /* 헤더 높이 제외 */
+  gap: var(--spacing-md);
 }
 
 .memo-textarea {
   width: 100%;
-  min-height: 400px;
+  flex: 1;
+  min-height: 200px;
   padding: var(--spacing-md);
   border: 2px solid var(--color-border);
   border-radius: var(--radius-md);
   background-color: var(--color-card-bg);
   color: var(--color-text);
   font-size: 16px;
-  resize: vertical;
+  resize: none;
   transition: border-color 0.2s;
 }
 
@@ -338,15 +343,13 @@ ul {
    Floating Action Buttons (FAB)
    ========================================== */
 .floating-buttons {
-  position: sticky;
-  bottom: 0;
   display: flex;
   justify-content: flex-end;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px;
-  background: linear-gradient(to top, var(--color-bg) 80%, transparent);
-  z-index: 100;
+  padding: 12px 0;
+  background-color: var(--color-bg);
+  border-top: 1px solid var(--color-border);
 }
 
 .fab {
