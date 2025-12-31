@@ -10,6 +10,7 @@ let currentFilter = 'all'; // 현재 필터 상태 (기본: 전체)
 let isImportantMode = false; // 중요 메모 모드
 let currentMemoId = null; // 현재 보고 있는 메모 ID
 let isEditMode = false; // 수정 모드 여부
+let currentImages = []; // 현재 선택된 이미지 배열 (Base64)
 
 // ==========================================
 // DOM 요소
@@ -31,6 +32,16 @@ const editBtn = document.getElementById('edit-btn');
 const shareBtn = document.getElementById('share-btn');
 const copyBtn = document.getElementById('copy-btn');
 const deleteBtn = document.getElementById('delete-btn');
+
+// 메뉴 요소
+const menuBtn = document.getElementById('menu-btn');
+const darkModeBtn = document.getElementById('dark-mode-btn');
+
+// 이미지 요소
+const imageBtn = document.getElementById('image-btn');
+const imageInput = document.getElementById('image-input');
+const imagePreviewContainer = document.getElementById('image-preview-container');
+const memoImagesContainer = document.getElementById('memo-images-container');
 
 // ==========================================
 // LocalStorage 함수
@@ -90,7 +101,8 @@ function addMemo() {
       hour: '2-digit',
       minute: '2-digit'
     }).replace(/\. /g, '.').replace(/\.$/, ''),
-    isImportant: isImportantMode
+    isImportant: isImportantMode,
+    images: [...currentImages] // 이미지 배열 복사
   };
 
   // 배열에 추가 (최신 메모가 위로)
@@ -103,6 +115,8 @@ function addMemo() {
   memoInput.value = '';
   isImportantMode = false;
   importantBtn.classList.remove('active');
+  currentImages = []; // 이미지 초기화
+  renderImagePreviews(); // 미리보기 초기화
 
   // 목록 다시 렌더링
   renderMemos();
@@ -128,6 +142,7 @@ function updateMemo(content) {
   memo.title = title;
   memo.content = content;
   memo.isImportant = isImportantMode;
+  memo.images = [...currentImages]; // 이미지 업데이트
   memo.date = new Date().toLocaleString('ko-KR', {
     year: 'numeric',
     month: '2-digit',
@@ -148,6 +163,8 @@ function updateMemo(content) {
   memoInput.value = '';
   isImportantMode = false;
   importantBtn.classList.remove('active');
+  currentImages = []; // 이미지 초기화
+  renderImagePreviews(); // 미리보기 초기화
 
   // 목록 다시 렌더링
   renderMemos();
@@ -226,6 +243,9 @@ function showMemoDetail(memoId) {
   memoContent.innerHTML = memo.content.replace(/\n/g, '<br>');
   memoContentDate.textContent = memo.date;
 
+  // 이미지 표시
+  renderMemoImages(memo.images || []);
+
   // 화면 전환
   mainView.classList.remove('active');
   memoView.classList.add('active');
@@ -276,6 +296,10 @@ function editMemo() {
     importantBtn.classList.remove('active');
   }
 
+  // 이미지 불러오기
+  currentImages = memo.images ? [...memo.images] : [];
+  renderImagePreviews();
+
   // 저장 버튼 텍스트 변경
   saveBtn.textContent = '수정완료';
 
@@ -324,6 +348,50 @@ function deleteMemo() {
   renderMemos();
 
   alert('메모가 삭제되었습니다.');
+}
+
+// ==========================================
+// 메모 공유
+// ==========================================
+
+function shareMemo() {
+  console.log('shareMemo 함수 실행됨');
+
+  // 현재 메모 찾기
+  const memo = memosArray.find(m => m.id === currentMemoId);
+
+  if (!memo) {
+    alert('메모를 찾을 수 없습니다.');
+    return;
+  }
+
+  console.log('공유할 메모:', memo.title);
+  console.log('navigator.share 지원 여부:', !!navigator.share);
+
+  // Web Share API 지원 확인
+  if (!navigator.share) {
+    alert('이 브라우저는 공유 기능을 지원하지 않습니다.\n(모바일 브라우저에서 사용 가능합니다)');
+    return;
+  }
+
+  // 공유 데이터 준비
+  const shareData = {
+    title: 'SPARK - ' + memo.title,
+    text: memo.content,
+  };
+
+  // 공유 실행
+  navigator.share(shareData)
+    .then(() => {
+      console.log('메모 공유 성공:', memo.title);
+    })
+    .catch((error) => {
+      // 사용자가 취소한 경우는 에러 메시지 표시 안 함
+      if (error.name !== 'AbortError') {
+        console.error('공유 실패:', error);
+        alert('메모 공유 중 오류가 발생했습니다.');
+      }
+    });
 }
 
 // ==========================================
@@ -515,6 +583,157 @@ function handleFileImport(event) {
 }
 
 // ==========================================
+// 다크모드 기능
+// ==========================================
+
+// 다크모드 토글
+function toggleDarkMode() {
+  const body = document.body;
+  const isDarkMode = body.classList.toggle('dark-mode');
+
+  // 버튼 텍스트 변경
+  if (isDarkMode) {
+    darkModeBtn.querySelector('.menu-icon').textContent = '☀️';
+    darkModeBtn.querySelector('.menu-text').textContent = '라이트모드';
+    console.log('다크모드 활성화');
+  } else {
+    darkModeBtn.querySelector('.menu-icon').textContent = '🌙';
+    darkModeBtn.querySelector('.menu-text').textContent = '다크모드';
+    console.log('라이트모드 활성화');
+  }
+
+  // LocalStorage에 저장
+  saveTheme(isDarkMode);
+}
+
+// 테마 저장
+function saveTheme(isDarkMode) {
+  localStorage.setItem('spark-theme', isDarkMode ? 'dark' : 'light');
+}
+
+// 테마 불러오기
+function loadTheme() {
+  const savedTheme = localStorage.getItem('spark-theme');
+  const body = document.body;
+
+  if (savedTheme === 'dark') {
+    body.classList.add('dark-mode');
+    darkModeBtn.querySelector('.menu-icon').textContent = '☀️';
+    darkModeBtn.querySelector('.menu-text').textContent = '라이트모드';
+    console.log('저장된 테마 적용: 다크모드');
+  } else {
+    body.classList.remove('dark-mode');
+    darkModeBtn.querySelector('.menu-icon').textContent = '🌙';
+    darkModeBtn.querySelector('.menu-text').textContent = '다크모드';
+    console.log('저장된 테마 적용: 라이트모드');
+  }
+}
+
+// ==========================================
+// 이미지 첨부 기능
+// ==========================================
+
+// 이미지 파일 선택 트리거
+function selectImage() {
+  imageInput.click();
+}
+
+// 이미지 파일 읽기
+function handleImageSelect(event) {
+  const files = event.target.files;
+
+  if (!files || files.length === 0) {
+    return;
+  }
+
+  // 최대 5개 제한
+  if (currentImages.length + files.length > 5) {
+    alert('이미지는 최대 5개까지만 첨부할 수 있습니다.');
+    return;
+  }
+
+  // 각 파일 읽기
+  Array.from(files).forEach(file => {
+    // 이미지 파일인지 확인
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 첨부할 수 있습니다.');
+      return;
+    }
+
+    // 파일 크기 체크 (2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      alert('이미지 크기는 2MB 이하여야 합니다.');
+      return;
+    }
+
+    // FileReader로 Base64 변환
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+      const base64Image = e.target.result;
+      currentImages.push(base64Image);
+      renderImagePreviews();
+      console.log('이미지 추가:', currentImages.length + '개');
+    };
+
+    reader.onerror = function() {
+      alert('이미지를 읽을 수 없습니다.');
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  // input 초기화
+  event.target.value = '';
+}
+
+// 이미지 미리보기 렌더링
+function renderImagePreviews() {
+  imagePreviewContainer.innerHTML = '';
+
+  currentImages.forEach((base64Image, index) => {
+    const previewItem = document.createElement('div');
+    previewItem.className = 'image-preview-item';
+
+    const img = document.createElement('img');
+    img.src = base64Image;
+    img.alt = `미리보기 ${index + 1}`;
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'image-remove-btn';
+    removeBtn.innerHTML = '×';
+    removeBtn.onclick = () => removeImage(index);
+
+    previewItem.appendChild(img);
+    previewItem.appendChild(removeBtn);
+    imagePreviewContainer.appendChild(previewItem);
+  });
+}
+
+// 이미지 삭제
+function removeImage(index) {
+  currentImages.splice(index, 1);
+  renderImagePreviews();
+  console.log('이미지 삭제:', currentImages.length + '개 남음');
+}
+
+// 메모 보기 화면에 이미지 렌더링
+function renderMemoImages(images) {
+  memoImagesContainer.innerHTML = '';
+
+  if (!images || images.length === 0) {
+    return;
+  }
+
+  images.forEach((base64Image, index) => {
+    const img = document.createElement('img');
+    img.src = base64Image;
+    img.alt = `이미지 ${index + 1}`;
+    memoImagesContainer.appendChild(img);
+  });
+}
+
+// ==========================================
 // 이벤트 리스너
 // ==========================================
 
@@ -542,8 +761,16 @@ backBtn.addEventListener('click', goBack);
 editBtn.addEventListener('click', editMemo);
 deleteBtn.addEventListener('click', deleteMemo);
 
+// 공유 버튼 (디버깅 로그 추가)
+console.log('shareBtn 요소:', shareBtn);
+if (shareBtn) {
+  shareBtn.addEventListener('click', shareMemo);
+  console.log('공유 버튼 이벤트 리스너 등록 완료');
+} else {
+  console.error('shareBtn 요소를 찾을 수 없습니다!');
+}
+
 // 드롭다운 메뉴
-const menuBtn = document.getElementById('menu-btn');
 menuBtn.addEventListener('click', toggleMenu);
 document.addEventListener('click', closeMenuOnClickOutside);
 
@@ -562,12 +789,25 @@ importBtn.addEventListener('click', () => {
 });
 importFileInput.addEventListener('change', handleFileImport);
 
+// 다크모드 버튼
+darkModeBtn.addEventListener('click', () => {
+  toggleDarkMode();
+  closeMenuAfterClick();
+});
+
+// 이미지 버튼
+imageBtn.addEventListener('click', selectImage);
+imageInput.addEventListener('change', handleImageSelect);
+
 // ==========================================
 // 초기화
 // ==========================================
 
 function init() {
   console.log('=== SPARK 메모장 앱 시작 ===');
+
+  // 저장된 테마 불러오기
+  loadTheme();
 
   // LocalStorage에서 메모 불러오기
   loadMemos();
