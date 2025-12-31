@@ -338,13 +338,15 @@ ul {
    Floating Action Buttons (FAB)
    ========================================== */
 .floating-buttons {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
+  position: sticky;
+  bottom: 0;
   display: flex;
-  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
   gap: 12px;
-  z-index: 1000;
+  padding: 12px 16px;
+  background: linear-gradient(to top, var(--color-bg) 80%, transparent);
+  z-index: 100;
 }
 
 .fab {
